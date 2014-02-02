@@ -1,0 +1,105 @@
+/* Kristen Kersh and Jackie Neon
+SpaceBrew Class Spring 2014 
+Parsons New School for Design 
+*/ 
+
+import spacebrew.*; //import spacebrew library 
+
+String server="sandbox.spacebrew.cc";
+String name="Neon_Kersh_HW1_Example";
+String description ="Client that sends and recives boolean messages that allows for a joint collage."; 
+
+Spacebrew sb; 
+
+int currentShape =0; //varible for current shape to loop through.
+int x1 =0; 
+int x2 =0; 
+int x3 =0; 
+int x4 =0; 
+int x5 =0; 
+int x6 =0; 
+int x7 =0; 
+int y1 =0; 
+int y2 =0; 
+int y3 =0; 
+int y4 =0; 
+int y5 =0; 
+int y6 =0; 
+int y7=0; 
+int radius1 =0; 
+int radius2 =0; 
+int radius3 =0; 
+int radius4 =0; 
+
+
+
+boolean button = false; //boolean for button
+boolean changeshape = false; // boolean for change shape and ranges
+
+void setup() { 
+  frameRate (250); //number of frameRates per second 
+  size (500,400); // size of interface 
+  
+ sb = new Spacebrew(this); //instantiate the spacebrewConnection varible
+ sb.addPublish ("button_pressed", "boolean", true); //declare your publishers
+ sb.addSubscribe ("current shape", "range"); //declareing each subscriber 
+ sb.addSubscribe ("x1", "range"); // all the parameters want to change
+ sb.addSubscribe ("x2", "range"); 
+ sb.addSubscribe ("x3", "range");
+ sb.addSubscribe ("x4", "range"); 
+ sb.addSubscribe ("x5", "range"); 
+ sb.addSubscribe ("x6", "range"); 
+ sb.addSubscribe ("x7", "range"); 
+ sb.addSubscribe ("y1", "range"); 
+ sb.addSubscribe ("y2", "range"); 
+ sb.addSubscribe ("y3", "range"); 
+ sb.addSubscribe  ("y4", "range"); 
+ sb.addSubscribe ("y5", "range"); 
+ sb.addSubscribe ("y6", "range"); 
+ sb.addSubscribe ("y7", "range"); 
+ sb.addSubscribe ("radius1", "range"); 
+ sb.addSubscribe ("radius2", "range"); 
+ sb.addSubscribe ("radius3", "range"); 
+ sb.addSubscribe ("radius4", "range"); 
+ sb.connect(server, name, description); // connect to spacebrew
+} 
+
+void draw (){ 
+  background(0); //background color 
+  ellipse(x1, y1,radius1,radius1); 
+  rect (x2, y2, radius2, radius2); 
+  rect (x3, y3, radius3, radius3); 
+  ellipse(x4,y4, radius4, radius4); 
+  triangle (x5,y5,x6,y6,x7,y7); 
+  
+  
+} 
+
+// When reciveing range message from SpaceBrew do the following 
+void onRangeMessage (String name, int value){
+  if(name.equals("x")){
+    if (currentShape == 1){
+      x1 = value; 
+    } else if (currentShape == 2){
+      x2 = value; 
+    }
+}else if (name.equals ("y")){
+  if (currentShape ==1){
+    y1 = value; 
+  } else if (currentShape ==2){ 
+    x2 = value; 
+    }
+  }
+}
+
+// change shape boolean message for true / false *(need to finish)  
+
+//void onBooleanMessage (String name, boolean value){
+//  //println("got bool message "+ name+" ":" = value) 
+//  
+//  // update shape 
+//  
+//  if (value == true) {
+//    currentShape; 
+//  } 
+//}
