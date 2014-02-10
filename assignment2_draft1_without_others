@@ -1,0 +1,99 @@
+//By Kristen Kersh Febuary 2014 for SPaceBrew Class 
+
+float x=0;       // variable for the x position of the ellipse
+float xInc=1;    //  this is how much we will move the x pos
+float y=0; // varible for the y position of the second ellipse 
+float yInc=1; // increase / move the y pos 
+float angle; // angle of rectangle 
+float deltaAngle; // main angle of rectangle 
+float x2; // x for rectangle
+float y2; // y for rectangle 
+color c; //might use this later for color 
+ 
+//this function is called once when the sketch first runs
+void setup(){
+  //we can set the size of the output window
+  size(500,500);
+  //the dimentions can be accessed by the variabels width and height
+  println("width  ["+width+"]");
+  println("height ["+height+"]");
+   
+  //initilise the x pos to be the middle of the screen
+  x= width/2;
+  //initilize the y pos to be the middle of the screen 
+  y = height/2; 
+  
+  //for the rectangle turns 
+  y2 = random(height); 
+  x2 = -width*.25; 
+  angle =0; // setting up value of angle varible 
+  deltaAngle =0.05; // delta angle 
+  c = color (255); // color of rec so it will change 
+  rectMode(CENTER); 
+  smooth(); //Draws all geometry with smooth (anti-aliased) edges
+   
+  //redraw the background black
+  background(0);
+}
+ 
+void draw(){
+  //redraw the window
+  background(0);
+  
+  //draw rectangle 
+  fill(244,30); 
+  rect(width/2, height/2, width, height); 
+  c = color(255,map(mouseY,0,height,0,255),0); // don't understand the map and last 0 
+  fill (c); // fill the rect with the color from above; 
+  
+  //mouse pressed interaction of the rec
+  if(mousePressed){
+    x2 = mouseX; 
+    deltaAngle=deltaAngle*0.7; // angle chnages by multipying 0.7
+  }
+  
+  else if (x2<width){
+    x2++; // else the x2 adds by 1 
+    angle+=deltaAngle; 
+  }
+  else {
+    y2=random (height); // else y1 of rect is random 
+    x2 = -width*.25; // x1 position is minus curent witdh times .25 or 25% this give backwards spin 
+    deltaAngle=random(-0.1,0.1); //deltaAngle changes as well 
+}
+
+pushMatrix(); 
+translate(x2,y2); 
+rotate (angle); 
+float size = map(mouseX,0,width/2,0.5,1); 
+rect (0,0,width*0.4*size,height*0.25*size); 
+popMatrix(); 
+   
+  //draw the ellipses'
+  //ellipse 1 
+  ellipse(x,height/2,20,20);
+  //ellipse 2 
+  ellipse(width/2, y, 40,40); 
+   
+  //add 2 to the x position of the ellipse
+  x+=xInc;
+  
+  // add 2 to the y position of the ellipse 
+   
+  y+=yInc; 
+  
+  //if the possition is greater than width (so centre of ellipse at edge of screen)
+  // || or
+  //the x pos is on the right edge of the window
+  if(x > width || x < 0){
+    //flip the sign of the amount we move
+    // if its +ve it moves to the right
+    // if its -ve it moves to the left
+    xInc= xInc *(-1);
+  }
+  
+  if (y> height || y < 0){
+    //flip the sign of the amount we move 
+    yInc= yInc*(-1); 
+  }
+}
