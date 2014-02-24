@@ -1,0 +1,126 @@
+ #include <Servo.h> // importing the servo library 
+
+ //Constants - keys for parsing messageing via serial 
+
+ #define SWING 'S' 
+
+ //Constants - messahe length, servo count, and debug 
+ #define MSG_LEN 4 
+ #define SERVOS 1 
+
+ //Varibles that hold reference to servo object (only have one servo so one defined) 
+ Servo one; 
+
+ boolean debug = false; //start off false 
+
+
+ //Arrays to hold information about state and mapping for the servo 
+
+ char ctrlIds [SERVOS] = {SWING}; 
+ int curPos [SERVOS] =   {0};
+ int newPos [SERVOS] = {0};  
+ int lowerMap [SERVOS]=  {0}; 
+ int upperMap [SERVOS] = {1023}; 
+// int lowerConstrainServo [SERVOS]= {20,0,20};  // lowerConstrainServo for ACTUAL motor position
+// int upperConstrainServo [SERVOS]= {200,140,100}; // upperConstrainServo for ACTUAL motor position
+ boolean servoActive[SERVOS] = {false}; 
+ 
+
+ 
+ //Other Varibles 
+ int stepDelay = 30; // slows servo steps in millis 
+ 
+ //Variables associate to message hadling 
+ int messageLength =0; //stores current array position when reading new data 
+ char message [MSG_LEN] = {'\0','\0','\0','\0'}; //changed from 16 to 4 because only one constant 
+                      
+ void setup(){
+   Serial.begin(9600); 
+  // intialize each servo by passing pin # 
+  one.attach(9); // swing servo pin # 
+
+ }    
+ 
+void loop() { 
+  handleSerial();
+ 
+	// loop through each of the servos to check if their position needs adjustment
+	for (int k = 0; k < SERVOS; k++) {             
+ 
+		// if a new servo position has been received or servo has not yet reached final position
+		// then move the servo
+		if (curPos[k] != newPos[k]) {
+			if (servoActive[k] == false) servoActive[k] = true;   
+ 
+			// move position upwards if new position is greater than current position
+			if (curPos[k] < newPos[k]) {      
+				curPos[k] += 1;
+			}
+ 
+			// move position downwards if new position is lower than current position
+			else if (curPos[k] > newPos[k]) {  
+				curPos[k] -= 1;
+			}
+ 
+			updatePos(k, curPos[k]);     // update the motors current position
+			delay(stepDelay);
+		}
+ 
+		// otherwise, set servo state to false 
+	    else {
+			if (servoActive[k] == true) {
+				servoActive[k] = false;   
+ 
+				// print message to serial if servo reached final location
+				if (debug) { 
+					Serial.print("OK: "); Serial.print(ctrlIds[k]);
+					Serial.print(" to "); 
+					//Serial.println(map(curPos[k], lowerConstrainServo[k], upperConstrainServo[k], lowerMap[k], upperMap[k])); 
+				}
+			}  
+		}
+	}
+}
+ //update the motors position 
+ void updatePos (int motor, int pos){
+   if (motor == 0) one.write(pos);
+
+ } 
+        
+//check serail port and read data as appropriate 
+ void handleSerial() { 
+  while (Serial.available()){
+    //get the new byte of info: 
+    char inChar = (char) Serial.read(); 
+    
+    //if the incoming charachter is a newline then parse message 
+    if (inChar == '\n' || messageLength >= MSG_LEN){ 
+      if (debug) {Serial.print(F("\n[handleSerial]")); Serial.println(message); } 
+      parseMessage(); 
+    } 
+    
+    else if (inChar == 'D'){ 
+      debug = true; 
+      if (debug) {Serial.println(F("\n[handleSerial] debug ON"));}
+      else { Serial.println(F("\n[handleSerial] debug OFF"));} 
+    } 
+    
+    else { 
+      message [messageLength] = inChar; 
+      messageLength ++; 
+          } 
+    
+        }
+    } 
+    
+ void parseMessage(){ 
+   for (int i=0; i< messageLength; i++){ 
+     if (message[i] == SWING) { 
+    } 
+  } 
+ }
+ 
+ void resetMessage() {
+	for (int i = 0; i < MSG_LEN; i ++) message[i] = '\0';
+	messageLength = 0;
+}
