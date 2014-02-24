@@ -1,0 +1,52 @@
+//Spacebrew Collab 2014 Parsons the New School for York 
+// Assignment 4 Kristen Kersh and Salome Asega 
+
+import spacebrew.*;
+import processing.serial.*;
+
+String server= "sandbox.spacebrew.cc"; //connecting to the server
+String name ="candybowl"; 
+String description ="This is a client that connects to the incoming cap sense info"; 
+
+int swing_val; 
+Spacebrew sb;
+Serial myPort; //seral port connetion 
+
+
+void setup(){
+  frameRate(240); 
+  size (400, 200);
+  
+  // instantiate the spacebrewConnection variable
+  sb = new Spacebrew( this );
+
+//add each thing you publish and subscribe to 
+  sb.addSubscribe("swing", "tummyrub"); 
+  
+    //connect! 
+  sb.connect (server, name, description); 
+  
+  myPort = new Serial(this, Serial.list()[(Serial.list().length-1)], 9600); 
+  myPort.bufferUntil('\n');
+  
+} 
+
+void draw (){ 
+  background (255,0,0); 
+  fill (255); 
+  textSize (30); 
+  textAlign(CENTER); 
+  text ("rubbing your tum tum", width/2, height/2); 
+  println (swing_val); 
+  myPort.write(swing_val); 
+} 
+
+
+void onCustomeMessage (String name, String type, String value){
+  println ("got" + type +  "message" + name +" : "+ value);
+  if (int(value)>= 1|| int(value)<=29){
+    swing_val = int(value);
+   
+  } 
+   myPort.write(swing_val);
+}
