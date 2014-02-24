@@ -1,0 +1,108 @@
+//Spacebrew Collab 2014 Parsons the New School for York 
+// Assignment 4 Kristen Kersh and Salome Asega 
+
+import spacebrew.*; // importing spacebrew library 
+
+String server= "sandbox.spacebrew.cc"; //connecting to the server
+String name ="candybowl"; 
+String description ="This is a client that connects to the incoming cap sense info"; 
+import processing.serial.*; 
+
+Serial myPort; // Create object from serial class
+boolean serial_connected = false; 
+
+Spacebrew sb; 
+int swing_val; 
+int sec0; 
+
+boolean toSend = false; 
+
+void setup(){
+  frameRate(240); 
+  size (400, 200); 
+  
+  // instantiate the spacebrewConnection variable
+  sb = new Spacebrew (this); 
+  
+  //add each thing you publish and subscribe to 
+  sb.addSubscribe("swing", "tummyrub"); 
+  
+  
+  //connect! 
+  sb.connect (server, name, description); 
+  
+  connect_serial_by_index(4); //check what index 4 means
+  
+}
+
+void draw (){
+  background (255,0,0); 
+  fill (255); 
+  textSize (30); 
+  textAlign(CENTER); 
+  text ("rubbing your tum tum", width/2, height/2); 
+  println (swing_val); 
+  
+} 
+
+void onCustomeMessage (String name, String type, String value){
+  println ("got" + type +  "message" + name +" : "+ value);
+  if (int(value)>= 1|| int(value)<=29){
+    swing_val = int(value);
+  } 
+   
+}
+
+//boolean message of swing string 
+void onBooleanMessage (String name, boolean value) { 
+  println("got boolean message" + name + ":" + value); //check out what : means in processing 
+  if (name.indexOf("swing") == 0) { 
+    String message = "S" + (value ? 1 : 0) + "\n"; 
+    myPort.write(message); 
+    println("Swing on/off message" + message); 
+  } 
+} 
+
+public void connect_serial_by_index(int serial_device_num){ 
+  String serial_list [] = Serial.list(); 
+  println (serial_list); 
+  
+  if (serial_device_num < serial_list.length) { 
+    try{ 
+      myPort = new Serial (this, serial_list[serial_device_num], 9600);
+      delay(3000); 
+      myPort.bufferUntil('\n'); 
+      myPort.write('\n'); 
+      serial_connected = true; 
+      
+    } 
+    
+    catch (Exception e) { 
+      serial_connected = false; 
+    } 
+  } 
+  
+  println( "\n** connection status**"); 
+  if (serial_connected) println ("found serial:" + serial_list[serial_device_num]); 
+  else println ("ERROR: serial NOT found"); 
+  
+} 
+
+  void serialEvent(Serial myPort) { 
+    String newMsg = ""; 
+    while (myPort.available () > 0) { 
+        char new_byte = char(myPort.read()); 
+        newMsg = newMsg + new_byte; 
+    } 
+    
+    print ("[serialEvent] message received" + newMsg); 
+  } 
+
+
+
+
+
+
+
+
+
