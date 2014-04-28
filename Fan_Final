@@ -1,0 +1,65 @@
+/*Kristen Kersh Fan Processing Sketch incoming info from javascript 
+ */
+import spacebrew.*;
+import processing.serial.*; // reading incoming serial 
+
+String server="sandbox.spacebrew.cc";
+String name="Fan";
+String description ="Client that sends and receives boolean messages from app;
+int buttonVal = 0; // could this be a boolean and just start as false? 
+int time; // millaseconds in time 
+boolean serial_connected = false; // setting connection serial to false 
+Serial myport; // creating object from serial class 
+Spacebrew sb;
+
+
+void setup() {
+  frameRate(240);
+  size(400, 200);
+
+  // instantiate the spacebrewConnection variable
+  sb = new Spacebrew( this );
+
+  // Don't need to publish **** declare your publishers
+  //sb.addPublish( "fan_servo", "boolean", true ); 
+
+  // declare your subscribers (do not think this is needed we are subscribing) 
+   sb.addSubscribe( "fan", "boolean" );
+   sb.addSubscribe ("led", "range"); // led will be range if have time
+
+  // connect to spacebrew
+  sb.connect (server, name, description );
+  
+  //serial actions 
+  myPort = new Serial (this, Serial.list () [2], 9600); // read serial port 
+  myPort.bufferUntil ('\n'); // not sure what this does but saw it in other code 
+  printLn(Serial.list()); // print the serial 
+}
+
+void draw() {
+  // set background color
+  background( 255,0,0); 
+  fill (255); 
+  textSize (30); 
+  textAlign (Center); 
+  text ("this is working!", width/2, height/2); // just seeing if working
+}
+ // i'm stuck here. I know that i need to write a serial event
+ // but what do i write to read the incoming boolean button from the java app?
+ 
+
+void serialEvent (Serial myport){ 
+  String newMsg =""; 
+  while (myPort.avalible () > 0){ 
+    char new_byte = char(myPort.read)); 
+    newMsg = 
+    // somewhere in here I need to tell it only to check every so often and send only so many mill seconds 
+    //but where?? 
+  } 
+} 
+void onBooleanMessage( String name, boolean value ){
+  println("got bool message " + name + " : " + value); 
+  if (name.indexOf("fan") == 0){ 
+    String message = 
+  }
+}
