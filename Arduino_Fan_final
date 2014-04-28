@@ -1,0 +1,55 @@
+//Kristen Kersh 2014 Spacebrew project 
+
+// Define Global Varibles 
+
+// Setup define serial and sending to processing 
+
+// void loop where action happens 
+// need to read in range through serial of ultra range sensor 
+// based on specific ranges turn servo x degress (states or just if statements? ) 
+// based on sensor values change lights 
+// send info to processing --- spacebrew --- javascript app --- calm down 
+
+#include <Servo.h> 
+
+ const int analogServoOutPin = 9; // constant global varible servo out Pin 
+ const int analogLedOutPin = 10; // constant led out pin
+ const int analogInPin = A0; // constant input from sensor pin 
+ 
+ int sensorValue; // incoming sensor data varible 
+ float sensorEased = 0.0; // ease the incoming data varible to make it more fluid 
+ Servo myservo; // servo object to control the servo 
+ int outputValue = 0; // output for LED 
+ int resNess = 0; // responce from SB incoming 0 should be max responce and 2 should be the min responce 
+ int servoPos = 0; // servo position to store 
+ 
+ int servoVals[] = {0,25,60,90}; // setting the 4 degress servo should turn 
+ 
+ void setup()
+ { 
+   Serial.begin(9600); // starts serial read 
+   myservo.attach(analogServoOutPin); // assigning analog servo pin 
+ } 
+ 
+ void loop() { 
+   Serial.print("sensor ="); // printing sensor = 
+   Serial.println(sensorValue); // printing sensor value on new line 
+ 
+  sensorEased = sensorEased * .99 + (float) analogRead(analogInPin) *.01; // reading sensor value in from analog the * is easing
+  sensorValue = round(sensorEased);
+  outputValue = constrain( 3 - map (sensorValue, 30, 200, 0, 3 - resNess), 0, 3); // mapping the sensor values only picking 0-3 (4)
+  // above resNess is subtracting the incoming data from the servo state to identify what movement 
+  
+  int newServoPos = servoVals[outputValue]; // output value is the servo movement based on the mapping 
+  
+  if (newServoPos != servoPos ){ // check servo position 
+    myservo.write(newServoPos); // write to new position 
+  }
+  servoPos = newServoPos; //  change servo to new position 
+  delay(15);
+  
+  if (Serial.availble()){ // if Serial is running read incoming serial from processing which is from spacebrew javascript app 
+   resNess = Serial.read ();  // reading serial from processing 
+  } 
+ } 
+ 
